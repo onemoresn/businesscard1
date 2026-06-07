@@ -1,10 +1,11 @@
-import { useMemo } from 'react'
-import { QRCodeSVG } from 'qrcode.react'
+import { useEffect, useState } from 'react'
+import { QRCodeCanvas } from 'qrcode.react'
 
 export default function CardQRCode() {
-  const cardUrl = useMemo(() => {
-    if (typeof window === 'undefined') return ''
-    return new URL(window.location.pathname, window.location.origin).href
+  const [cardUrl, setCardUrl] = useState('')
+
+  useEffect(() => {
+    setCardUrl(new URL(window.location.pathname, window.location.origin).href)
   }, [])
 
   if (!cardUrl) return null
@@ -12,11 +13,11 @@ export default function CardQRCode() {
   return (
     <div className="card-qr">
       <div className="card-qr__code">
-        <QRCodeSVG
+        <QRCodeCanvas
           value={cardUrl}
           size={88}
           level="M"
-          marginSize={0}
+          marginSize={1}
           bgColor="#ffffff"
           fgColor="#1a1a1a"
         />
