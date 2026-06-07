@@ -2,11 +2,18 @@
   "name": "digital-business-card",
   "private": true,
   "version": "1.0.0",
+  "description": "N-Finit Digital Business Card",
+  "author": "N-Finit Development",
+  "main": "electron/main.cjs",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "icon": "node scripts/generate-icon.mjs",
+    "build:electron": "cross-env ELECTRON_BUILD=true tsc -b && cross-env ELECTRON_BUILD=true vite build",
+    "pack:win": "npm run icon && npm run build:electron && electron-builder --win",
+    "pack": "npm run pack:win"
   },
   "dependencies": {
     "qrcode.react": "^4.2.0",
@@ -17,7 +24,50 @@
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
+    "cross-env": "^7.0.3",
+    "electron": "^35.1.5",
+    "electron-builder": "^25.1.8",
+    "png-to-ico": "^2.1.8",
+    "sharp": "^0.34.1",
     "typescript": "~5.8.3",
     "vite": "^6.3.5"
+  },
+  "build": {
+    "appId": "com.nfinit.digitalcard",
+    "productName": "N-Finit Digital Card",
+    "copyright": "Copyright © N-Finit Development",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "build/icon.ico",
+      "build/icon.png"
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
+      "shortcutName": "N-Finit Digital Card"
+    },
+    "portable": {
+      "artifactName": "N-Finit-Digital-Card-Portable.exe"
+    }
   }
 }
