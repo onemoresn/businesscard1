@@ -115,6 +115,9 @@ export default function BusinessCard({ profile }: Props) {
           {aboutMe || 'Add a short bio in Settings to introduce yourself.'}
         </p>
         <CardQRCode />
+        <p className="business-card__copyright">
+          © {new Date().getFullYear()} N-Finit Development
+        </p>
       </section>
     </article>
   )

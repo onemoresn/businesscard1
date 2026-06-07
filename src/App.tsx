@@ -1,17 +1,44 @@
 import { useState } from 'react'
+import { hasPassword } from './auth'
 import BusinessCard from './components/BusinessCard'
+import PasswordModal from './components/PasswordModal'
 import Settings from './components/Settings'
+import SetupWizard from './components/SetupWizard'
 import { CardProfile } from './types'
-import { loadProfile, saveProfile } from './storage'
+import { isWizardComplete, loadProfile, markWizardComplete, saveProfile } from './storage'
 
 export default function App() {
   const [profile, setProfile] = useState<CardProfile>(loadProfile)
+  const [showWizard, setShowWizard] = useState(!isWizardComplete())
+  const [showPasswordCreate, setShowPasswordCreate] = useState(!hasPassword() && isWizardComplete())
+  const [showPasswordEnter, setShowPasswordEnter] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
 
   const handleSave = (updated: CardProfile) => {
     setProfile(updated)
     saveProfile(updated)
     setSettingsOpen(false)
+  }
+
+  const handleWizardComplete = (updated: CardProfile) => {
+    setProfile(updated)
+    saveProfile(updated)
+    markWizardComplete()
+    setShowWizard(false)
+  }
+
+  const handleSettingsClick = () => {
+    if (!hasPassword()) {
+      setShowPasswordCreate(true)
+      return
+    }
+    setShowPasswordEnter(true)
+  }
+
+  const openSettings = () => {
+    setShowPasswordEnter(false)
+    setShowPasswordCreate(false)
+    setSettingsOpen(true)
   }
 
   return (
@@ -21,7 +48,7 @@ export default function App() {
 
         <button
           className="fab-settings"
-          onClick={() => setSettingsOpen(true)}
+          onClick={handleSettingsClick}
           aria-label="Open settings"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -30,6 +57,26 @@ export default function App() {
           </svg>
         </button>
       </div>
+
+      {showWizard && (
+        <SetupWizard profile={profile} onComplete={handleWizardComplete} />
+      )}
+
+      {showPasswordCreate && (
+        <PasswordModal
+          mode="create"
+          onSuccess={openSettings}
+          onClose={() => setShowPasswordCreate(false)}
+        />
+      )}
+
+      {showPasswordEnter && (
+        <PasswordModal
+          mode="enter"
+          onSuccess={openSettings}
+          onClose={() => setShowPasswordEnter(false)}
+        />
+      )}
 
       {settingsOpen && (
         <Settings

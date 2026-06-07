@@ -1,10 +1,11 @@
 import { CardProfile, DEFAULT_PROFILE } from './types'
 
-const STORAGE_KEY = 'digital-business-card-profile'
+const PROFILE_KEY = 'digital-business-card-profile'
+const WIZARD_KEY = 'digital-business-card-wizard-complete'
 
 export function loadProfile(): CardProfile {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = localStorage.getItem(PROFILE_KEY)
     if (!raw) return { ...DEFAULT_PROFILE }
     return { ...DEFAULT_PROFILE, ...JSON.parse(raw) }
   } catch {
@@ -13,5 +14,13 @@ export function loadProfile(): CardProfile {
 }
 
 export function saveProfile(profile: CardProfile): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(profile))
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile))
+}
+
+export function isWizardComplete(): boolean {
+  return localStorage.getItem(WIZARD_KEY) === 'true'
+}
+
+export function markWizardComplete(): void {
+  localStorage.setItem(WIZARD_KEY, 'true')
 }

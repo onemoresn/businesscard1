@@ -1,4 +1,5 @@
 import { useState, useRef, ChangeEvent, FormEvent } from 'react'
+import PasswordModal from './PasswordModal'
 import { CardProfile } from '../types'
 
 interface Props {
@@ -9,6 +10,8 @@ interface Props {
 
 export default function Settings({ profile, onSave, onClose }: Props) {
   const [form, setForm] = useState<CardProfile>({ ...profile })
+  const [showChangePassword, setShowChangePassword] = useState(false)
+  const [passwordChanged, setPasswordChanged] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const update = (field: keyof CardProfile, value: string) => {
@@ -46,6 +49,19 @@ export default function Settings({ profile, onSave, onClose }: Props) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     onSave(form)
+  }
+
+  if (showChangePassword) {
+    return (
+      <PasswordModal
+        mode="change"
+        onSuccess={() => {
+          setShowChangePassword(false)
+          setPasswordChanged(true)
+        }}
+        onClose={() => setShowChangePassword(false)}
+      />
+    )
   }
 
   return (
@@ -151,6 +167,21 @@ export default function Settings({ profile, onSave, onClose }: Props) {
                 placeholder="www.yourcompany.com"
               />
             </label>
+          </fieldset>
+
+          <fieldset className="settings-section">
+            <legend className="settings-section__title">Security</legend>
+            <p className="settings-section__hint">Settings are protected by your password.</p>
+            <button
+              type="button"
+              className="btn btn--secondary"
+              onClick={() => setShowChangePassword(true)}
+            >
+              Change Password
+            </button>
+            {passwordChanged && (
+              <p className="field__success">Password updated successfully.</p>
+            )}
           </fieldset>
 
           <fieldset className="settings-section">
